@@ -143,6 +143,6 @@ To log or update your cycle:
 | Issue | Solution |
 |---|---|
 | **"Cannot connect to server" or API errors** | Verify that the deployed backend is healthy at its configured health endpoint. |
-| **"PostgreSQL password lost / database error"** | You can switch to a free cloud PostgreSQL server (such as Neon.tech) in under 2 minutes by setting `DATABASE_URL` in `apps/backend/.env`. Refer to Section 4 of the [README.md](file:///e:/GIT%20PROJECTS/Sakhi/README.md) for details. |
+| **"PostgreSQL password lost / database error"** | Create or use a Supabase project, copy its Session pooler URI from **Project Settings → Database → Connection string**, set it as `DATABASE_URL` in `apps/backend/.env`, and run `apps/backend/sql/schema.sql` in the Supabase SQL Editor. Refer to Section 4 of the README for details. |
 | **Blank screen after route change** | Open the deployed frontend URL and hard reload with `Ctrl+Shift+R` to clear old browser cache. |
 | **Chatbot returns fallback message** | Check your network connection. If using Gemini AI fallback, verify your `GEMINI_API_KEY` in `apps/backend/.env`. |

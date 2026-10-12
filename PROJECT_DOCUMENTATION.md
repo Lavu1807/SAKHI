@@ -483,13 +483,14 @@ This is rule-based personalization. It does not use a trained ML model.
 - Works well with structured logs and analytics
 
 ### Connection Configuration & Cloud Deployment
-SAKHI requires a managed PostgreSQL provider (e.g., Neon.tech, Supabase, Render, Railway):
-- **Managed PostgreSQL (`DATABASE_URL`):** Configure the pooled connection string with SSL in the backend deployment environment:
+SAKHI uses Supabase PostgreSQL for persistence:
+- **Supabase PostgreSQL (`DATABASE_URL`):** Configure the Session pooler connection string with SSL in the backend deployment environment:
   ```env
-  DATABASE_URL=postgresql://user:password@host/database?sslmode=require
+  DATABASE_URL=postgresql://postgres.project-ref:password@aws-0-region.pooler.supabase.com:5432/postgres?sslmode=require
   DATABASE_SSL=true
+  DB_POOL_MAX=5
   ```
-The database connection pool (`apps/backend/src/config/db.js`) requires `DATABASE_URL`, validates its PostgreSQL protocol, and applies SSL by default.
+- Run `apps/backend/sql/schema.sql` once in the Supabase SQL Editor before starting the backend. The database connection pool (`apps/backend/src/config/db.js`) requires `DATABASE_URL`, validates its PostgreSQL protocol, and applies SSL by default.
 
 ---
 

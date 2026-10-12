@@ -97,7 +97,7 @@ Sakhi/
 ### Prerequisites
 - **Node.js** v18.0.0 or higher
 - **npm** v9.0.0 or higher
-- **Managed PostgreSQL** database from a provider such as [Neon.tech](https://neon.tech) or [Supabase](https://supabase.com)
+- **Supabase** project with PostgreSQL enabled
 
 ### 1) Clone the Repository & Install Dependencies
 
@@ -108,10 +108,10 @@ npm install
 
 ### 2) Add Managed PostgreSQL
 
-1. Create a PostgreSQL project with [Neon](https://neon.tech), [Supabase](https://supabase.com), Render, Railway, or another managed provider.
-2. Copy the provider's pooled connection string. It must start with `postgresql://` or `postgres://` and should include `sslmode=require`.
-3. Open the provider's SQL editor, paste the contents of `apps/backend/sql/schema.sql`, and execute it once.
-4. Keep the connection string private and add it to the backend deployment as `DATABASE_URL`.
+1. Create a project at [Supabase](https://supabase.com).
+2. Open **Project Settings → Database → Connection string → URI → Connection pooling** and copy the **Session pooler** URI. Replace the password placeholder and keep `sslmode=require`.
+3. Open the Supabase **SQL Editor**, paste `apps/backend/sql/schema.sql`, and run it once.
+4. Keep the connection string private and add it to `apps/backend/.env` or your backend host as `DATABASE_URL`.
 
 ### 3) Configure Deployment Environment Variables
 
@@ -122,9 +122,10 @@ PORT=5000
 CORS_ORIGIN=https://your-frontend.example.com
 
 # --- Cloud Database Option (Recommended) ---
-DATABASE_URL=postgresql://user:password@ep-sample-project.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL=postgresql://postgres.project-ref:password@aws-0-region.pooler.supabase.com:5432/postgres?sslmode=require
 
 DATABASE_SSL=true
+DB_POOL_MAX=5
 
 # Authentication
 JWT_SECRET=sakhi_development_secret_key_12345
