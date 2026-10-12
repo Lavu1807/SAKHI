@@ -1,7 +1,22 @@
 const pool = require('../../config/db');
+const bcrypt = require("bcrypt");
 
 const demoUsers = new Map();
 let nextDemoUserId = 1;
+
+if (process.env.DEMO_MODE === "true") {
+	demoUsers.set("maya@sakhi.demo", {
+		id: nextDemoUserId++,
+		name: "Maya",
+		email: "maya@sakhi.demo",
+		password: bcrypt.hashSync("sakhi2026", 10),
+		age: null,
+		weight: null,
+		height: null,
+		lifestyle: null,
+		created_at: new Date().toISOString(),
+	});
+}
 
 function isDemoMode() {
 	return process.env.DEMO_MODE === "true";
