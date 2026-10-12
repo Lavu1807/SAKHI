@@ -49,17 +49,19 @@ jobs:
         
     - name: Install dependencies
       run: |
+        ROLLDOWN_BINDING_VERSION="$(node -p "require('./package-lock.json').packages['node_modules/@rolldown/binding-linux-x64-gnu'].version")"
+        LIGHTNINGCSS_BINDING_VERSION="$(node -p "require('./package-lock.json').packages['node_modules/lightningcss-linux-x64-gnu'].version")"
         if npm ci --include=optional; then
           :
         else
           rm -rf node_modules package-lock.json
           npm install --include=optional
         fi
-        npm install --no-save --include=optional @rolldown/binding-linux-x64-gnu@1.0.0-rc.17 lightningcss-linux-x64-gnu@1.32.0
+        npm install --no-save --include=optional @rolldown/binding-linux-x64-gnu@"${ROLLDOWN_BINDING_VERSION}" lightningcss-linux-x64-gnu@"${LIGHTNINGCSS_BINDING_VERSION}"
         node --input-type=module -e "import('rolldown')" || {
           rm -rf node_modules package-lock.json
           npm install --include=optional
-          npm install --no-save --include=optional @rolldown/binding-linux-x64-gnu@1.0.0-rc.17 lightningcss-linux-x64-gnu@1.32.0
+          npm install --no-save --include=optional @rolldown/binding-linux-x64-gnu@"${ROLLDOWN_BINDING_VERSION}" lightningcss-linux-x64-gnu@"${LIGHTNINGCSS_BINDING_VERSION}"
         }
       
     - name: Run frontend tests
