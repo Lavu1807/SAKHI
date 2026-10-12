@@ -61,6 +61,16 @@ app.get("/metrics", async (req, res) => {
 
 // Enriched health check with DB status, pool stats, cache info, and alert status.
 app.get("/api/health", async (req, res) => {
+	if (process.env.DEMO_MODE === "true") {
+		return res.status(200).json({
+			status: "ok",
+			service: "sakhi-backend",
+			database: "demo-mode",
+			message: "Local presentation mode is active.",
+			timestamp: new Date().toISOString(),
+		});
+	}
+
 	try {
 		await pool.query("SELECT 1");
 

@@ -1,6 +1,17 @@
 const pool = require('../../config/db');
 
+const demoUsers = new Map();
+let nextDemoUserId = 1;
+
+function isDemoMode() {
+	return process.env.DEMO_MODE === "true";
+}
+
 async function findUserByEmail(email) {
+	if (isDemoMode()) {
+		return demoUsers.get(email) || null;
+	}
+
 	const query = `
 		SELECT id, name, email, password, age, weight, height, lifestyle, created_at
 		FROM users
@@ -13,6 +24,23 @@ async function findUserByEmail(email) {
 }
 
 async function createUser({ name, email, passwordHash, age, weight, height, lifestyle }) {
+	if (isDemoMode()) {
+		const user = {
+			id: nextDemoUserId++,
+			name,
+			email,
+			password: passwordHash,
+			age,
+			weight,
+			height,
+			lifestyle,
+			created_at: new Date().toISOString(),
+		};
+		demoUsers.set(email, user);
+		const { password: _password, ...safeUser } = user;
+		return safeUser;
+	}
+
 	const query = `
 		INSERT INTO users (name, email, password, age, weight, height, lifestyle)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -32,6 +60,10 @@ async function createUser({ name, email, passwordHash, age, weight, height, life
 }
 
 async function savePasswordResetToken(userId, token, expiresAt) {
+	if (isDemoMode()) {
+		return { id: 1, token };
+	}
+
 	const query = `
 		INSERT INTO password_reset_tokens (user_id, token, expires_at)
 		VALUES ($1, $2, $3)
