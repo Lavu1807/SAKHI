@@ -3,6 +3,11 @@ const logger = require('../../shared/utils/logger');
 
 const MAX_MEMORY_MESSAGES = 5;
 const MODULE_LOG = logger.child({ module: "conversationMemoryService" });
+const demoMemory = new Map();
+
+function isDemoMode() {
+	return process.env.DEMO_MODE === "true";
+}
 
 function normalizeConversationKey(value) {
 	const normalized = String(value || "")
@@ -56,6 +61,9 @@ function cloneMemory(memory) {
 
 async function getConversationMemory(conversationKey) {
 	const storeKey = normalizeConversationKey(conversationKey);
+	if (isDemoMode()) {
+		return cloneMemory(demoMemory.get(storeKey) || createEmptyMemory());
+	}
 
 	try {
 		const query = `
@@ -87,6 +95,18 @@ async function updateConversationMemory(conversationKey, { message, intent } = {
 	const storeKey = normalizeConversationKey(conversationKey);
 	const normalizedMessage = normalizeMessage(message);
 	const normalizedIntent = normalizeIntent(intent);
+	if (isDemoMode()) {
+		const existing = demoMemory.get(storeKey) || createEmptyMemory();
+		const next = {
+			messages: normalizedMessage
+				? [...existing.messages, { message: normalizedMessage, intent: normalizedIntent }].slice(-MAX_MEMORY_MESSAGES)
+				: existing.messages,
+			lastIntent: normalizedIntent,
+			geminiCallCount: existing.geminiCallCount,
+		};
+		demoMemory.set(storeKey, next);
+		return cloneMemory(next);
+	}
 
 	try {
 		const existing = await getConversationMemory(storeKey);
@@ -127,6 +147,9 @@ async function updateConversationMemory(conversationKey, { message, intent } = {
 
 async function getGeminiCallCount(conversationKey) {
 	const storeKey = normalizeConversationKey(conversationKey);
+	if (isDemoMode()) {
+		return normalizeGeminiCallCount(demoMemory.get(storeKey)?.geminiCallCount);
+	}
 
 	try {
 		const query = `
@@ -146,6 +169,12 @@ async function getGeminiCallCount(conversationKey) {
 
 async function incrementGeminiCallCount(conversationKey) {
 	const storeKey = normalizeConversationKey(conversationKey);
+	if (isDemoMode()) {
+		const memory = demoMemory.get(storeKey) || createEmptyMemory();
+		memory.geminiCallCount += 1;
+		demoMemory.set(storeKey, memory);
+		return memory.geminiCallCount;
+	}
 
 	try {
 		const query = `

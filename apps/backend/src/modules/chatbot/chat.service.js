@@ -127,6 +127,13 @@ async function getHybridChatResponse(message, context, conversationKey) {
 		};
 	}
 
+	if (process.env.DEMO_MODE === "true" && detectedIntent === "general") {
+		return {
+			intent: "general",
+			reply: "I am here with you. I can help you understand your cycle, nutrition, mood, and symptoms. For your question, start gently, notice how your body feels, and seek professional care for severe or unusual symptoms.",
+		};
+	}
+
 	if (detectedIntent !== "general") {
 		const reply = await generateResponse(detectedIntent, context, message);
 		return {
